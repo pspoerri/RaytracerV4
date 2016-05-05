@@ -25,9 +25,8 @@ fn draw_png(window: &Window, scene: &Scene) {
 }
 
 fn main() {
-    // let mut camera = Camera::new(1000.0, 1000.0);
-    // camera.print();
-    let window = Window::new(1024, 768);
+    let mut window = Window::new(1024, 768);
+    // let window = Window::new(3, 3);
     let mut scene = Scene::new();
     draw_png(&window, &scene)
 }

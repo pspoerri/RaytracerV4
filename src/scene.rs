@@ -19,9 +19,9 @@ impl Scene {
         let mut primitives: Vec<Box<Primitive>> = Vec::new();
         primitives.push(Box::new(
             Sphere { 
-                position: Vec3::new(0.0,0.0,0.0),
-                color: Vec3::new(1.0, 1.0, 1.0),
-                radius: 0.25
+                position: Pnt3::new(0.0,0.0,0.0),
+                color: Color::new(1.0, 1.0, 1.0),
+                radius: 1.0
             } 
         ));
 
@@ -33,8 +33,14 @@ impl Scene {
         scene
     }
     pub fn compute(&self, ray: &Ray) -> Color {
-        Color::new(ray.dir.x.abs(), ray.dir.y.abs(), ray.dir.z.abs())*100.0
-        // Color::new(ray.dir.x, ray.dir.y, 0.0)+Color::new(0.5, 0.5, 0.0)
-        // Color::new(abs(ray.dir.x))
+        let mut c = Color::new(0.0, 0.0, 0.0);
+        for p in &self.primitives {
+            if (p.intersect(&ray)) {
+                c.x = 1.0;
+                c.y = 1.0;
+                c.z = 1.0; 
+            }
+        }
+        c
     }
 }

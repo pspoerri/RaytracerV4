@@ -5,18 +5,19 @@ use types::*;
 pub struct Ray {
     pub tmin: Float,
     pub tmax: Float,
-    pub origin: Vec3,
+    pub origin: Pnt3,
     pub dir: Vec3
 }
 
 impl Ray {
-    pub fn new(origin: &Vec3, dir: Vec3, tmin: Float, tmax: Float) -> Ray {
+    pub fn new(origin: &Pnt3, dir: Vec3, tmin: Float, tmax: Float) -> Ray {
         let mut ray = Ray {
             tmin: tmin,
             tmax: tmax,
             origin: origin.clone(),
             dir: dir.normalize()
         };
+        // println!("{:?}", ray);
         ray
     }
 }
