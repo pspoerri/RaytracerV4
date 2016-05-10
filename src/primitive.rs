@@ -1,11 +1,12 @@
 use nalgebra::{Vector3, Vector4, Matrix4, Norm, Cross, Dot, Inverse, Eye};
 use ray::Ray;
 use types::*;
+use hit::HitInfo;
+use std::option::Option;
 
 pub trait Primitive {
-    fn intersect(&self, ray: &Ray) -> bool;
+    fn intersect(&self, ray: &Ray) -> Option<HitInfo>;
     fn compute_distance(&self, ray: &Ray) -> Float;
-    fn compute_hit(&self, ray: &Ray) -> Color;
 }
 
 pub struct Sphere {
@@ -15,7 +16,7 @@ pub struct Sphere {
 }
 
 impl Primitive for Sphere {
-    fn intersect(&self, ray: &Ray) -> bool {
+    fn intersect(&self, ray: &Ray) -> Option<HitInfo> {
         let c = self.position;
         let o = ray.origin;
         let d = ray.dir;
@@ -23,7 +24,7 @@ impl Primitive for Sphere {
         let dk = (c-o).dot(&d);
         let D2 = (c-o).norm_squared()-dk*dk;
         if D2 > r2 {
-            return false;
+            return None;
         }
         let f = Float::sqrt(r2-D2);
         let t = dk;
@@ -33,18 +34,15 @@ impl Primitive for Sphere {
         let t = t1.min(t2);
         if t < ray.tmin {
             let t = t1.max(t2);
-            if (t < ray.tmax) {
-                // Hit distance is t
-            }
-            return false;
+            // if (t < ray.tmax) {
+            //     // Hit distance is t
+            // }
+            return None;
         }
         if t > ray.tmax {
-            return false;
+            return None;
         }
-        return true;
-    }
-    fn compute_hit(&self, ray: &Ray) -> Color {
-        Color::new(1.0, 1.0, 1.0)
+        return Some(HitInfo::new(&*self, t, -d, o+t*d, o));
     }
     fn compute_distance(&self, ray: &Ray) -> Float {
         1.0

@@ -10,6 +10,7 @@ mod scene;
 mod ray;
 mod light;
 mod primitive;
+mod hit;
 use window::Window;
 use scene::Scene;
 
