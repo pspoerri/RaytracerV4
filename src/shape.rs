@@ -1,18 +1,20 @@
+use std::rc::Rc;
 use nalgebra::{Vector3, Vector4, Matrix4, Norm, Cross, Dot, Inverse, Eye};
 use ray::Ray;
 use types::*;
 use hit::HitInfo;
-use std::option::Option;
+use scene::Scene;
+use shader::Shader;
 
 pub trait Shape {
     fn intersect(&self, ray: &Ray) -> Option<HitInfo>;
-    fn compute_distance(&self, ray: &Ray) -> Float;
+    fn shade(&self, hit: &HitInfo, scene: &Scene) -> Color;
 }
 
 pub struct Sphere {
     pub position: Pnt3,
     pub radius: Float,
-    pub color: Color
+    pub shader: Rc<Shader>
 }
 
 impl Shape for Sphere {
@@ -33,7 +35,7 @@ impl Shape for Sphere {
 
         let t = t1.min(t2);
         if t < ray.tmin {
-            let t = t1.max(t2);
+            // let t = t1.max(t2);
             // if (t < ray.tmax) {
             //     // Hit distance is t
             // }
@@ -42,9 +44,11 @@ impl Shape for Sphere {
         if t > ray.tmax {
             return None;
         }
-        return Some(HitInfo::new(&*self, t, -d, o+t*d, o));
+        let p = o+t*d;
+        let n = (p-self.position)/self.radius;
+        return Some(HitInfo::new(&*self, t, -d, p, o, n));
     }
-    fn compute_distance(&self, ray: &Ray) -> Float {
-        1.0
+    fn shade(&self, hit: &HitInfo, scene: &Scene) -> Color {
+        self.shader.shade(hit, scene)
     }
 }

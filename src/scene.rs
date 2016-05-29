@@ -1,8 +1,11 @@
+use std::rc::Rc;
 use std::vec::Vec;
 use std::boxed::Box;
 use light::Light;
 use shape::*;
 use types::*;
+use shader::*;
+use hit::HitInfo;
 use ray::Ray;
 // use std::num::abs;
 use nalgebra::{Vector3, Vector4, Matrix4, Norm, Cross, Dot, Inverse, Eye};
@@ -16,15 +19,26 @@ pub struct Scene {
 
 impl Scene {
     pub fn new() -> Scene {
+        let gouraud_shader = Rc::new(
+                GouraudShader { color: Color::new(1.0, 0.0, 0.0) }
+            );
         let mut shapes: Vec<Box<Shape>> = Vec::new();
         shapes.push(Box::new(
             Sphere { 
                 position: Pnt3::new(0.0,0.0,0.0),
-                color: Color::new(1.0, 1.0, 1.0),
-                radius: 1.0
+                // color: Color::new(1.0, 1.0, 1.0),
+                radius: 1.0,
+                shader: gouraud_shader.clone()
             } 
         ));
-
+        shapes.push(Box::new(
+            Sphere { 
+                position: Pnt3::new(3.0,3.0,0.0),
+                // color: Color::new(1.0, 1.0, 1.0),
+                radius: 1.0,
+                shader: gouraud_shader.clone()
+            } 
+        ));
         let mut lights: Vec<Box<Light>> = Vec::new();
         let mut scene = Scene {
             shapes: shapes,
@@ -32,8 +46,18 @@ impl Scene {
         };
         scene
     }
-    // pub fn intersect(ray: &Ray) -> Option<&Shape>
-    // {
-        
-    // }
+    pub fn intersect(&self, ray: &mut Ray) -> Option<HitInfo>
+    {
+        let mut value = None;
+        for s in &self.shapes {
+            match s.intersect(&ray) {
+                None => {},
+                Some(hit) => {
+                    ray.tmin = hit.d;
+                    value = Some(hit);               
+                }
+            }
+        }
+        value
+    }
 }

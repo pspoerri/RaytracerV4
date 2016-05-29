@@ -18,7 +18,9 @@ impl<'a>  HitInfo<'a> {
         distance: Float, 
         incident: Vec3,
         hit_point: Pnt3,
-        hit_origin: Pnt3) -> HitInfo
+        hit_origin: Pnt3,
+        normal: Vec3
+        ) -> HitInfo
     {
         let hit = HitInfo {
             shape: shape,
@@ -26,7 +28,7 @@ impl<'a>  HitInfo<'a> {
             i: incident,
             p: hit_point,
             o: hit_origin,
-            n: Vec3::new(1.0, 1.0, 1.0)
+            n: normal
         };
         hit
     }

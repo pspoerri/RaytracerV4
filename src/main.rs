@@ -12,7 +12,8 @@ mod light;
 mod shape;
 mod hit;
 mod renderer;
-
+mod shader;
+mod warp;
 use window::Window;
 use scene::Scene;
 

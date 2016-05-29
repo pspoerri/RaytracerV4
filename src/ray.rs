@@ -20,4 +20,5 @@ impl Ray {
         // println!("{:?}", ray);
         ray
     }
+    
 }

@@ -14,16 +14,18 @@ impl<'a> Renderer<'a> {
         };
         renderer
     }
-    pub fn render(&self, ray: &Ray) -> Color
+    pub fn render(&self, ray: &mut Ray) -> Color
     {
-        let mut c = Color::new(0.0, 0.0, 0.0);
-        //  for p in &self.primitives {
-        //      if (p.intersect(&ray)) {
-        //          c.x = 1.0;
-        //          c.y = 1.0;
-        //          c.z = 1.0; 
-        //      }
-        //  }
+        let mut c = Color::new(0.0, 0.0, 0.0);        
+        match self.scene.intersect(ray) {
+            None => {
+                return c;
+            },
+            Some(hit) => {
+                c = hit.shape.shade(&hit, &self.scene);
+            }
+        }
+        // ToDo: Fog
         c
     }
 }
