@@ -1,10 +1,10 @@
 use nalgebra::{Vector3, Vector4, Matrix4, Norm, Cross, Dot, Inverse, Eye};
 use ray::Ray;
 use types::*;
-use primitive::Primitive;
+use shape::Shape;
 
 pub struct HitInfo<'a> {
-    pub primitive: &'a Primitive,
+    pub shape: &'a Shape,
     pub d: Float,     // Hit distance
     pub i: Vec3,    // Incident vector
     pub p: Pnt3,    // Hit point
@@ -14,14 +14,14 @@ pub struct HitInfo<'a> {
 
 impl<'a>  HitInfo<'a> {
     pub fn new(
-        primitive: &'a Primitive,
+        shape: &'a Shape,
         distance: Float, 
         incident: Vec3,
         hit_point: Pnt3,
         hit_origin: Pnt3) -> HitInfo
     {
         let hit = HitInfo {
-            primitive: primitive,
+            shape: shape,
             d: distance,
             i: incident,
             p: hit_point,

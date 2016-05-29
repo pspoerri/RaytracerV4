@@ -4,7 +4,7 @@ use types::*;
 use hit::HitInfo;
 use std::option::Option;
 
-pub trait Primitive {
+pub trait Shape {
     fn intersect(&self, ray: &Ray) -> Option<HitInfo>;
     fn compute_distance(&self, ray: &Ray) -> Float;
 }
@@ -15,7 +15,7 @@ pub struct Sphere {
     pub color: Color
 }
 
-impl Primitive for Sphere {
+impl Shape for Sphere {
     fn intersect(&self, ray: &Ray) -> Option<HitInfo> {
         let c = self.position;
         let o = ray.origin;
