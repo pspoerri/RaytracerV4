@@ -5,6 +5,9 @@ use types::*;
 use hit::HitInfo;
 use scene::Scene;
 use shader::Shader;
+use rand::Rng;
+use warp::*;
+use std::f64;
 
 pub trait Shape {
     fn intersect(&self, ray: &Ray) -> Option<HitInfo>;
@@ -34,11 +37,7 @@ impl Shape for Sphere {
         let t2 = t-f;
 
         let t = t1.min(t2);
-        if t < ray.tmin {
-            // let t = t1.max(t2);
-            // if (t < ray.tmax) {
-            //     // Hit distance is t
-            // }
+        if t < ray.tmin && t.abs() > f64::EPSILON {
             return None;
         }
         if t > ray.tmax {
@@ -52,3 +51,25 @@ impl Shape for Sphere {
         self.shader.shade(hit, scene)
     }
 }
+// unsafe impl Sync for Sphere {}
+
+// pub struct Triangle {
+//     pub v1: Pnt3,
+//     pub v2: Pnt3,
+//     pub v3: Pnt3,
+//     pub n: Vec3
+// }
+
+// impl Triangle {
+//     fn new(v1: Pnt3, v2: Pnt3, v3: Pnt3) -> Triangle {
+//         let e1 = v2 - v1;
+//         let e2 = v3 - v1;
+//         let n = e1.cross(&e2).normalize();
+//     }
+// }
+
+// impl Shape for Triangle {
+//     fn intersect(&self, ray: Ray) -> Option<HitInfo> {
+
+//     }
+// }

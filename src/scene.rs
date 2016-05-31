@@ -22,23 +22,40 @@ impl Scene {
         let gouraud_shader = Rc::new(
                 GouraudShader { color: Color::new(1.0, 0.0, 0.0) }
             );
+        let gouraud_shader_green = Rc::new(
+                GouraudShader { color: Color::new(0.0, 1.0, 0.0) }
+            );
+        let ambient_occlusion_shader = Rc::new(
+                AmbientOcculusionShader { samples: 128, color: Color::new(0.5, 0.5, 0.5) }
+            );
+
         let mut shapes: Vec<Box<Shape>> = Vec::new();
         shapes.push(Box::new(
             Sphere { 
-                position: Pnt3::new(0.0,0.0,0.0),
+                position: Pnt3::new(-2.0,0.0,0.0),
                 // color: Color::new(1.0, 1.0, 1.0),
                 radius: 1.0,
-                shader: gouraud_shader.clone()
+                shader: ambient_occlusion_shader.clone()
             } 
         ));
         shapes.push(Box::new(
             Sphere { 
-                position: Pnt3::new(3.0,3.0,0.0),
+                position: Pnt3::new(2.0,0.0,0.0),
                 // color: Color::new(1.0, 1.0, 1.0),
                 radius: 1.0,
-                shader: gouraud_shader.clone()
+                shader: ambient_occlusion_shader.clone()
             } 
         ));
+
+        shapes.push(Box::new(
+            Sphere { 
+                position: Pnt3::new(0.0,0.0,-10000000.0-1.0),
+                // color: Color::new(1.0, 1.0, 1.0),
+                radius: 10000000.0,
+                shader: ambient_occlusion_shader.clone()
+            } 
+        ));
+
         let mut lights: Vec<Box<Light>> = Vec::new();
         let mut scene = Scene {
             shapes: shapes,
@@ -53,7 +70,7 @@ impl Scene {
             match s.intersect(&ray) {
                 None => {},
                 Some(hit) => {
-                    ray.tmin = hit.d;
+                    ray.tmax = hit.d;
                     value = Some(hit);               
                 }
             }

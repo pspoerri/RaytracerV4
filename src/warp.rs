@@ -18,8 +18,7 @@ pub enum WarpFunction {
     Phong_Hemisphere,
 }
 
-pub fn get_pdf(x: Float, y: Float, warp_function: WarpFunction) -> Float
-{
+pub fn get_pdf(x: Float, y: Float, warp_function: WarpFunction) -> Float {
     match warp_function {
          WarpFunction::UniformHemisphere => 1.0/(2.0*PI),
          WarpFunction::UniformSphere => 1.0/(4.0*PI),
@@ -127,5 +126,6 @@ fn compute_concentric_map_rho_theta(u1: Float, u2: Float, rho: &mut Float, theta
             t = 6.0 + sx/r;
         }
     }
+    *rho = r;
     *theta = t * (PI/4.0);
 }

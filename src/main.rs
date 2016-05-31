@@ -1,19 +1,22 @@
 extern crate nalgebra;
 extern crate num_traits;
 extern crate image;
+extern crate rand;
+extern crate scoped_threadpool;
 
-// pub mod math;
-mod types;
 mod camera;
-mod window;
-mod scene;
-mod ray;
-mod light;
-mod shape;
 mod hit;
+mod light;
+mod ray;
 mod renderer;
+mod sampling;
+mod scene;
 mod shader;
+mod shape;
+mod types;
 mod warp;
+mod window;
+
 use window::Window;
 use scene::Scene;
 
