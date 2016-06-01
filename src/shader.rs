@@ -4,13 +4,14 @@ use types::*;
 use hit::HitInfo;
 use std::option::Option;
 use std::f64;
-use scene::Scene;
 use rand::{thread_rng, ThreadRng, Rng};
 use warp::*;
 use std::f64::consts::*;
 
+use renderer::Renderer;
+
 pub trait Shader {
-    fn shade(&self, hit: &HitInfo, scene: &Scene) -> Color;
+    fn shade(&self, hit: &HitInfo, renderer: &Renderer) -> Color;
 }
 
 pub struct GouraudShader {
@@ -18,7 +19,7 @@ pub struct GouraudShader {
 }
 
 impl Shader for GouraudShader {
-    fn shade(&self, hit: &HitInfo, scene: &Scene) -> Color {
+    fn shade(&self, hit: &HitInfo, renderer: &Renderer) -> Color {
         let n = Color::new(0.5, 0.5, 0.5)+hit.n*0.5;
         let c = &self.color;
         let r = n.x*c.x;
@@ -33,7 +34,7 @@ pub struct PhongShader {
 }
 
 impl Shader for PhongShader {
-    fn shade(&self, hit: &HitInfo, scene: &Scene) -> Color {
+    fn shade(&self, hit: &HitInfo, renderer: &Renderer) -> Color {
         self.color
     }
 }
@@ -44,7 +45,7 @@ pub struct AmbientOcculusionShader {
 }
 
 impl Shader for AmbientOcculusionShader {
-    fn shade(& self, hit: &HitInfo, scene: &Scene) -> Color {
+    fn shade(&self, hit: &HitInfo, renderer: &Renderer) -> Color {
         let mut color = Color::new(0.0, 0.0, 0.0);
         let mut rng = thread_rng();
         let fsamples = self.samples as f64;
@@ -59,12 +60,12 @@ impl Shader for AmbientOcculusionShader {
                 rot*dir, 
                 f64::EPSILON,
                 f64::INFINITY);
-            match scene.intersect(&mut ray) {
-                None => {color += self.color/(fsamples);}
+            match renderer.intersect(&mut ray) {
+                None => {color += self.color;}
                 Some(hit) => {}
             }
         }
-        color
+        color / (fsamples)
     }
 }
 

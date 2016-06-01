@@ -3,15 +3,16 @@ use nalgebra::{Vector3, Vector4, Matrix4, Norm, Cross, Dot, Inverse, Eye};
 use ray::Ray;
 use types::*;
 use hit::HitInfo;
-use scene::Scene;
+use renderer::Renderer;
 use shader::Shader;
 use rand::Rng;
 use warp::*;
 use std::f64;
 
+
 pub trait Shape {
     fn intersect(&self, ray: &Ray) -> Option<HitInfo>;
-    fn shade(&self, hit: &HitInfo, scene: &Scene) -> Color;
+    fn shade(&self, hit: &HitInfo, renderer: &Renderer) -> Color;
 }
 
 pub struct Sphere {
@@ -47,8 +48,8 @@ impl Shape for Sphere {
         let n = (p-self.position)/self.radius;
         return Some(HitInfo::new(&*self, t, -d, p, o, n));
     }
-    fn shade(&self, hit: &HitInfo, scene: &Scene) -> Color {
-        self.shader.shade(hit, scene)
+    fn shade(&self, hit: &HitInfo, renderer: &Renderer) -> Color {
+        self.shader.shade(hit, renderer)
     }
 }
 // unsafe impl Sync for Sphere {}

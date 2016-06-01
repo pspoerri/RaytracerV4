@@ -26,7 +26,7 @@ impl Scene {
                 GouraudShader { color: Color::new(0.0, 1.0, 0.0) }
             );
         let ambient_occlusion_shader = Rc::new(
-                AmbientOcculusionShader { samples: 128, color: Color::new(0.5, 0.5, 0.5) }
+                AmbientOcculusionShader { samples: 256, color: Color::new(0.8, 0.8, 0.8) }
             );
 
         let mut shapes: Vec<Box<Shape>> = Vec::new();
@@ -62,19 +62,5 @@ impl Scene {
             lights: lights
         };
         scene
-    }
-    pub fn intersect(&self, ray: &mut Ray) -> Option<HitInfo>
-    {
-        let mut value = None;
-        for s in &self.shapes {
-            match s.intersect(&ray) {
-                None => {},
-                Some(hit) => {
-                    ray.tmax = hit.d;
-                    value = Some(hit);               
-                }
-            }
-        }
-        value
     }
 }

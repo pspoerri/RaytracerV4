@@ -1,6 +1,7 @@
 use types::*;
 use scene::Scene;
 use ray::Ray;
+use hit::HitInfo;
 
 pub struct Renderer<'a> {
     scene: &'a Scene
@@ -17,15 +18,30 @@ impl<'a> Renderer<'a> {
     pub fn render(&self, ray: &mut Ray) -> Color
     {
         let mut c = Color::new(0.0, 0.0, 0.0);        
-        match self.scene.intersect(ray) {
+        match self.intersect(ray) {
             None => {
                 return c;
             },
             Some(hit) => {
-                c = hit.shape.shade(&hit, &self.scene);
+                c = hit.shape.shade(&hit, &self);
             }
         }
         // ToDo: Fog
         c
+    }
+    
+    pub fn intersect(&self, ray: &mut Ray) -> Option<HitInfo>
+    {
+        let mut value = None;
+        for s in &self.scene.shapes {
+            match s.intersect(&ray) {
+                None => {},
+                Some(hit) => {
+                    ray.tmax = hit.d;
+                    value = Some(hit);               
+                }
+            }
+        }
+        value
     }
 }
