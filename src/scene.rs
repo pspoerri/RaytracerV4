@@ -46,6 +46,14 @@ impl Scene {
                 shader: ambient_occlusion_shader.clone()
             } 
         ));
+        shapes.push(Box::new(
+            Sphere { 
+                position: Pnt3::new(0.0,1.0,0.0),
+                // color: Color::new(1.0, 1.0, 1.0),
+                radius: 1.0,
+                shader: ambient_occlusion_shader.clone()
+            } 
+        ));
 
         shapes.push(Box::new(
             Sphere { 

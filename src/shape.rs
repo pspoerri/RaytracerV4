@@ -10,7 +10,7 @@ use warp::*;
 use std::f64;
 
 
-pub trait Shape {
+pub trait Shape: Sync {
     fn intersect(&self, ray: &Ray) -> Option<HitInfo>;
     fn shade(&self, hit: &HitInfo, renderer: &Renderer) -> Color;
 }
@@ -52,7 +52,8 @@ impl Shape for Sphere {
         self.shader.shade(hit, renderer)
     }
 }
-// unsafe impl Sync for Sphere {}
+
+unsafe impl Sync for Sphere {}
 
 // pub struct Triangle {
 //     pub v1: Pnt3,

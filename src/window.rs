@@ -5,7 +5,8 @@ use image::{ImageBuffer, Rgb};
 use std::vec::Vec;
 use types::*;
 
-use scoped_threadpool::Pool;
+use std::sync::{Arc, Barrier};
+use threadpool::ThreadPool;
 
 #[derive(Debug)]
 pub struct Window {
@@ -27,12 +28,22 @@ impl Window {
         let renderer = Renderer::new(scene);
         let mut imgbuf = ImageBuffer::new(self.width, self.height);
 
+        let jobs = 8;
+        let pool = ThreadPool::new(jobs);
+        let barrier = Arc::new(Barrier::new(jobs + 1));
         for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-            let mut ray = self.camera.generate_ray(x, y);
-            let color: Color = renderer.render(&mut ray)*255.0;
-            // println!("{:?}", color);
-            *pixel = Rgb([color.x as u8, color.y as u8, color.z as u8]);
+
+            let barrier = barrier.clone();
+            pool.execute(move || {
+                let mut ray = self.camera.generate_ray(x, y);
+                let color: Color = renderer.render(&mut ray)*255.0;
+                // println!("{:?}", color);
+                *pixel = Rgb([color.x as u8, color.y as u8, color.z as u8]);
+                barrier.wait();
+            });
         }
+
+        barrier.wait();
         imgbuf
     }
     pub fn draw(&self, scene: &Scene) {
