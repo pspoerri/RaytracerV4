@@ -8,7 +8,7 @@ pub struct Renderer<'a> {
 }
 
 impl<'a> Renderer<'a> {
-    pub fn new(scene: &'a Scene) -> Renderer<'a>
+    pub fn new(scene: &'a Scene) -> Renderer
     {
         let renderer = Renderer {
             scene: scene
@@ -45,3 +45,4 @@ impl<'a> Renderer<'a> {
         value
     }
 }
+unsafe impl<'a> Send for Renderer<'a> {}

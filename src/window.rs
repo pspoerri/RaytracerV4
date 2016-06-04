@@ -6,7 +6,8 @@ use std::vec::Vec;
 use types::*;
 
 use std::sync::{Arc, Barrier};
-use threadpool::ThreadPool;
+// use threadpool::ThreadPool;
+use scoped_threadpool::Pool;
 
 #[derive(Debug)]
 pub struct Window {
@@ -25,25 +26,22 @@ impl Window {
         window
     }
     pub fn draw_as_image(&self, scene: &Scene) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
-        let renderer = Renderer::new(scene);
-        let mut imgbuf = ImageBuffer::new(self.width, self.height);
+        let mut imgbuf = ImageBuffer::new(self.width, self.height);        
+        let mut pool = Pool::new(4);
+        let renderer: Renderer = Renderer::new(scene);
+        let renderer_ref: &Renderer = &renderer;
+        let camera_ref: &Camera = &self.camera;
+        pool.scoped(|scope| {
+            for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
+                scope.execute(move || {
+                    let mut ray = camera_ref.generate_ray(x, y);
+                    let color: Color = renderer_ref.render(&mut ray)*255.0;
+                    // println!("{:?}", color);
+                    *pixel = Rgb([color.x as u8, color.y as u8, color.z as u8]);
+                });
+            }
+        });
 
-        let jobs = 8;
-        let pool = ThreadPool::new(jobs);
-        let barrier = Arc::new(Barrier::new(jobs + 1));
-        for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-
-            let barrier = barrier.clone();
-            pool.execute(move || {
-                let mut ray = self.camera.generate_ray(x, y);
-                let color: Color = renderer.render(&mut ray)*255.0;
-                // println!("{:?}", color);
-                *pixel = Rgb([color.x as u8, color.y as u8, color.z as u8]);
-                barrier.wait();
-            });
-        }
-
-        barrier.wait();
         imgbuf
     }
     pub fn draw(&self, scene: &Scene) {

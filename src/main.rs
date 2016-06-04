@@ -2,7 +2,8 @@ extern crate nalgebra;
 extern crate num_traits;
 extern crate image;
 extern crate rand;
-extern crate threadpool;
+// extern crate threadpool;
+extern crate scoped_threadpool;
 
 mod camera;
 mod hit;
