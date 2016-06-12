@@ -26,7 +26,7 @@ impl Scene {
                 GouraudShader { color: Color::new(0.0, 1.0, 0.0) }
             );
         let ambient_occlusion_shader = Rc::new(
-                AmbientOcculusionShader { samples: 1024, color: Color::new(0.8, 0.8, 0.8) }
+                AmbientOcculusionShader { samples: 256, color: Color::new(0.7411, 0.7411, 0.7411) }
             );
 
         let mut shapes: Vec<Box<Shape>> = Vec::new();

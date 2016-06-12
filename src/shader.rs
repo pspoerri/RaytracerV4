@@ -53,7 +53,7 @@ impl Shader for AmbientOcculusionShader {
         let axis = Vec3::new(0.0, 0.0, 1.0);
         let rot = rotate_to(&axis, &hit.n);
         for i in 0..self.samples {
-            let (dir, pdf) = sample_hit(hit, &mut rng);
+            let dir = sample_hit(hit, &mut rng);
 
             let mut ray = Ray::new(
                 &hit.p, 
@@ -61,21 +61,22 @@ impl Shader for AmbientOcculusionShader {
                 f64::EPSILON,
                 f64::INFINITY);
             match renderer.intersect(&mut ray) {
-                None => {color += self.color;}
+                None => {
+                    let costheta = axis.dot(&-dir);
+                    let pdf = get_pdf(costheta, WarpFunction::CosineHemisphere);
+                    color += self.color*costheta/pdf;
+                }
                 Some(hit) => {}
             }
         }
-        color / (fsamples)
+        color / (fsamples*PI)
     }
 }
 
-fn sample_hit(hit: &HitInfo, rng: &mut ThreadRng) -> (Vec3, Float) {
+fn sample_hit(hit: &HitInfo, rng: &mut ThreadRng) -> Vec3 {
     let s: Float = rng.gen_range(0.0, 1.0);
     let t: Float = rng.gen_range(0.0, 1.0);
-    let dir = warp_point(s.clone(), t.clone(), WarpFunction::CosineHemisphere);
-    let pdf = get_pdf(s, t, WarpFunction::CosineHemisphere);
-    let sample_dir = Vec3::new(0.0, 0.0, 1.0);
-    (dir, pdf)
+    warp_point(s, t, WarpFunction::CosineHemisphere)
 }
 
 fn rotate_to(from: &Vec3, to: &Vec3) -> Rotation3<Float> {

@@ -18,16 +18,13 @@ pub enum WarpFunction {
     Phong_Hemisphere,
 }
 
-pub fn get_pdf(x: Float, y: Float, warp_function: WarpFunction) -> Float {
+pub fn get_pdf(costheta: Float, warp_function: WarpFunction) -> Float {
     match warp_function {
          WarpFunction::UniformHemisphere => 1.0/(2.0*PI),
          WarpFunction::UniformSphere => 1.0/(4.0*PI),
          WarpFunction::UniformDisk | WarpFunction::ConcentricDisk => 1.0/PI,
          WarpFunction::CosineHemisphere => {
-            let mut rho = 0.0;
-            let mut theta = 0.0;
-            compute_concentric_map_rho_theta(x, y, &mut rho, &mut theta);
-            1.0/PI*Float::cos(theta)*Float::sin(theta)
+            costheta*1.0/PI
         },
         WarpFunction::UniformTriangle => 2.0,
         _ => 1.0
